@@ -1,35 +1,41 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BuildingEscape.h"
-#include "PositionReport.h"
+#include "CustomRotator.h"
 
 
 // Sets default values for this component's properties
-UPositionReport::UPositionReport()
+UCustomRotator::UCustomRotator()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	
+	// ...
 }
 
 
 // Called when the game starts
-void UPositionReport::BeginPlay()
+void UCustomRotator::BeginPlay()
 {
 	Super::BeginPlay();
-	FString locationStr = GetOwner()->GetTransform().GetLocation().ToString();
-	FString name = GetOwner()->GetName();
-	UE_LOG(LogTemp, Warning, TEXT("Object is %s in %s"), *name, *locationStr);
-	// ...
-	
+	Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+}
+
+void UCustomRotator::OpenDoor()
+{
+	auto Owner = GetOwner();
+	FRotator NewRotator(0.f, -60.f, 0.f);
+	Owner->SetActorRotation(NewRotator);
 }
 
 
 // Called every frame
-void UPositionReport::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UCustomRotator::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	if (PressuePlate->IsOverlappingActor(Pawn))
+		OpenDoor();
 	// ...
 }
 
