@@ -21,27 +21,75 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("Grabber work!"))
+	handleComponent = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	inputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+
+	inputComponent->BindAction(UGrabber::GRAB, EInputEvent::IE_Pressed, this, &UGrabber::Grab);
+	inputComponent->BindAction(UGrabber::GRAB, EInputEvent::IE_Released, this, &UGrabber::Release);
 }
+
+
+void UGrabber::Grab() 
+{	
+	FVector eyeLocation;
+	FRotator eyeRotation;
+
+	GetWorld()->GetFirstPlayerController()->GetActorEyesViewPoint(
+		OUT eyeLocation,
+		OUT eyeRotation
+	);
+
+	FVector lineEnd = eyeLocation + eyeRotation.Vector()*Length;	
+
+	FHitResult					hitResult;
+	FCollisionQueryParams		queryParams("Trace", false, GetOwner());
+	FCollisionObjectQueryParams objectParam(ECollisionChannel::ECC_PhysicsBody);
+
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT hitResult,
+		eyeLocation,
+		lineEnd,
+		objectParam,
+		queryParams
+	);
+
+	auto hitActor = hitResult.GetActor();
+	auto hitComponent = hitResult.GetComponent();	 
+
+	if (hitActor)		
+		handleComponent->GrabComponent(
+			hitComponent, 
+			NAME_None, 
+			hitComponent->GetOwner()->GetActorLocation(), 
+			true
+		);	
+
+}
+
+void UGrabber::Release()
+{	
+	handleComponent->ReleaseComponent();
+}
+
 
 
 // Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
+	if (handleComponent->GrabbedComponent) {
+		
+		FVector eyeLocation;
+		FRotator eyeRotation;
 
-	
-	FVector eyeLocation;
-	FRotator eyeRotation;
-	GetWorld()->GetFirstPlayerController()->GetActorEyesViewPoint(
-		OUT eyeLocation, 
-		OUT eyeRotation
-	);
+		GetWorld()->GetFirstPlayerController()->GetActorEyesViewPoint(
+			OUT eyeLocation,
+			OUT eyeRotation
+		);
 
-	UE_LOG(LogTemp, Warning, TEXT("Position: %s Rotation: %s"), *eyeLocation.ToString(), *eyeRotation.ToString())
+		FVector lineEnd = eyeLocation + eyeRotation.Vector()*Length;
 
-	/*
-	FVector lineEnd = eyeLocation + eyeRotation*Length;
-	DrawDebugLine(GetWorld(), eyeLocation, )*/
+		handleComponent->SetTargetLocation(lineEnd);
+	}
 }
 

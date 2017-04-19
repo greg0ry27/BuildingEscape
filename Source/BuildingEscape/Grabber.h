@@ -5,7 +5,6 @@
 #include "Components/ActorComponent.h"
 #include "Grabber.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UGrabber : public UActorComponent
 {
@@ -20,10 +19,20 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+
+	const FName GRAB = "Grab";
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	void Grab();
 
+	void Release();
 		
-	UPROPERTY(EditAnywhere)
-	float Length = 5.0f;
+	UPROPERTY(VisibleAnywhere)
+	float Length = 100.0f;
+
+	UPhysicsHandleComponent *handleComponent = nullptr;
+	UInputComponent *inputComponent = nullptr;
+
 };
