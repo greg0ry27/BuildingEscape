@@ -3,6 +3,8 @@
 #include "BuildingEscape.h"
 #include "CustomRotator.h"
 
+#define OUT
+
 
 // Sets default values for this component's properties
 UCustomRotator::UCustomRotator()
@@ -18,15 +20,41 @@ UCustomRotator::UCustomRotator()
 // Called when the game starts
 void UCustomRotator::BeginPlay()
 {
-	Super::BeginPlay();
-	Pawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	Super::BeginPlay();	
 }
 
 void UCustomRotator::OpenDoor()
 {
 	auto Owner = GetOwner();
-	FRotator NewRotator(0.f, -60.f, 0.f);
+	FRotator NewRotator(0.f, -angle, 0.f);
 	Owner->SetActorRotation(NewRotator);
+}
+
+void UCustomRotator::CloseDoor()
+{
+	auto Owner = GetOwner();
+	FRotator NewRotator(0.f, 0.f, 0.f);
+	Owner->SetActorRotation(NewRotator);
+}
+
+float UCustomRotator::GetTotalWeight() 
+{
+	TArray<AActor*> OverlappingActors;
+
+	PressuePlate->GetOverlappingActors(OUT OverlappingActors);
+	FString names;
+
+	float totalWeight = 0.0f;
+	for (auto &Actor : OverlappingActors) {
+		names += Actor->GetName();
+		auto component = Actor->FindComponentByClass<UPrimitiveComponent>();
+		totalWeight += component->GetMass();		
+	}	
+
+	if (totalWeight > 0)
+		UE_LOG(LogTemp, Warning, TEXT("Total weight: %f, Items: %s"), totalWeight, *names)
+
+	return totalWeight;
 }
 
 
@@ -34,8 +62,9 @@ void UCustomRotator::OpenDoor()
 void UCustomRotator::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (PressuePlate->IsOverlappingActor(Pawn))
+	if (GetTotalWeight() > openedWeight)
 		OpenDoor();
-	// ...
+	else
+		CloseDoor();
 }
 

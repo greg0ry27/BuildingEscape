@@ -21,19 +21,22 @@ protected:
 
 	void OpenDoor();
 
+	void CloseDoor();
+
 public:	
 
 	UPROPERTY(VisibleAnywhere)
-	float angle = 90.0f;
+	float angle = 80.0f;
 
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressuePlate;
+	
+	UPROPERTY(EditAnywhere)
+	float openedWeight;
 
-	UPROPERTY(VisibleAnywhere)
-	AActor* Pawn;
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
-	
+	float GetTotalWeight();
 };
