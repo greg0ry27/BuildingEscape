@@ -50,10 +50,7 @@ float UCustomRotator::GetTotalWeight()
 		auto component = Actor->FindComponentByClass<UPrimitiveComponent>();
 		totalWeight += component->GetMass();		
 	}	
-
-	if (totalWeight > 0)
-		UE_LOG(LogTemp, Warning, TEXT("Total weight: %f, Items: %s"), totalWeight, *names)
-
+	
 	return totalWeight;
 }
 
