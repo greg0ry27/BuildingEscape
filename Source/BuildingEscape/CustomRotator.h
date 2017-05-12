@@ -29,7 +29,7 @@ public:
 	float angle = 80.0f;
 
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume* PressuePlate;
+	ATriggerVolume* PressuePlate = nullptr;
 	
 	UPROPERTY(EditAnywhere)
 	float openedWeight;

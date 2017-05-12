@@ -13,6 +13,8 @@ UCustomRotator::UCustomRotator()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	
+	if (!PressuePlate)
+		UE_LOG(LogTemp, Error, TEXT("Pressue plate missing in %s"), *this->GetName())
 	// ...
 }
 
@@ -59,6 +61,10 @@ float UCustomRotator::GetTotalWeight()
 void UCustomRotator::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (!PressuePlate)
+		return;
+		
 	if (GetTotalWeight() > openedWeight)
 		OpenDoor();
 	else

@@ -24,13 +24,27 @@ void UGrabber::BeginPlay()
 	handleComponent = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	inputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 
-	inputComponent->BindAction(UGrabber::GRAB, EInputEvent::IE_Pressed, this, &UGrabber::Grab);
-	inputComponent->BindAction(UGrabber::GRAB, EInputEvent::IE_Released, this, &UGrabber::Release);
+	if (!handleComponent)
+		UE_LOG(LogTemp, Error, TEXT("UPhysicsHandleComponent is not assign to %s"), *this->GetName())
+
+	if (!inputComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UInputComponent is not assign to %s"), *this->GetName())
+	}
+	else 
+	{
+		inputComponent->BindAction(UGrabber::GRAB, EInputEvent::IE_Pressed, this, &UGrabber::Grab);
+		inputComponent->BindAction(UGrabber::GRAB, EInputEvent::IE_Released, this, &UGrabber::Release);
+	}	
 }
+
 
 
 void UGrabber::Grab() 
 {	
+	if (!handleComponent)
+		return;
+
 	FVector eyeLocation;
 	FRotator eyeRotation;
 
