@@ -6,6 +6,8 @@
 #include "CustomRotator.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDoorEvent);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UCustomRotator : public UActorComponent
 {
@@ -18,16 +20,16 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(BlueprintAssignable)
+	FDoorEvent OnOpen;
 
-	void OpenDoor();
-
-	void CloseDoor();
+	UPROPERTY(BlueprintAssignable)
+	FDoorEvent OnClose;
 
 public:	
 
-	UPROPERTY(VisibleAnywhere)
-	float angle = 80.0f;
-
+	
 	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressuePlate = nullptr;
 	

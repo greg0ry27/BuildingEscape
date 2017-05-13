@@ -25,19 +25,6 @@ void UCustomRotator::BeginPlay()
 	Super::BeginPlay();	
 }
 
-void UCustomRotator::OpenDoor()
-{
-	auto Owner = GetOwner();
-	FRotator NewRotator(0.f, -angle, 0.f);
-	Owner->SetActorRotation(NewRotator);
-}
-
-void UCustomRotator::CloseDoor()
-{
-	auto Owner = GetOwner();
-	FRotator NewRotator(0.f, 0.f, 0.f);
-	Owner->SetActorRotation(NewRotator);
-}
 
 float UCustomRotator::GetTotalWeight() 
 {
@@ -66,8 +53,8 @@ void UCustomRotator::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		return;
 		
 	if (GetTotalWeight() > openedWeight)
-		OpenDoor();
+		OnOpen.Broadcast();
 	else
-		CloseDoor();
+		OnClose.Broadcast();
 }
 
